@@ -19,23 +19,26 @@ function impactClass(direction) {
   return "flat";
 }
 
-function googleFinanceUrl(ticker = "") {
+function formatAssetLabel(ticker = "") {
   const symbol = String(ticker).trim().toUpperCase();
-  const exchangeMap = {
-    AAPL: "NASDAQ",
-    MSFT: "NASDAQ",
-    NVDA: "NASDAQ",
-    AMZN: "NASDAQ",
-    SPY: "NYSEARCA",
-    QQQ: "NASDAQ",
-    GLD: "NYSEARCA"
+  const knownAssets = {
+    "BTC-USD": "Bitcoin",
+    "ETH-USD": "Ethereum",
+    "SOL-USD": "Solana",
+    "GC=F": "Gold Futures",
+    "SI=F": "Silver Futures",
+    AAPL: "Apple",
+    MSFT: "Microsoft",
+    NVDA: "NVIDIA",
+    AMZN: "Amazon",
+    SPY: "SPDR S&P 500 ETF",
+    QQQ: "Invesco QQQ Trust",
+    GLD: "SPDR Gold Shares"
   };
 
-  if (exchangeMap[symbol]) {
-    return `https://www.google.com/finance/quote/${encodeURIComponent(symbol)}:${exchangeMap[symbol]}`;
-  }
-
-  return `https://www.google.com/finance/quote/${encodeURIComponent(symbol)}`;
+  if (!symbol) return "Asset: Unknown";
+  if (knownAssets[symbol]) return `Asset: ${knownAssets[symbol]} (${symbol})`;
+  return `Asset: ${symbol}`;
 }
 
 function cardTemplate(item) {
@@ -53,10 +56,9 @@ function cardTemplate(item) {
       <p class="summary">${item.summary}</p>
       <p class="meta-row">Rationale: ${item.impact.rationale}</p>
       <p class="meta-row">
-        <a target="_blank" rel="noopener noreferrer" href="${item.url}">View source</a>
-        ·
-        <a target="_blank" rel="noopener noreferrer" href="${googleFinanceUrl(item.ticker)}">Google Finance</a>
+        ${formatAssetLabel(item.ticker)}
       </p>
+      <p class="meta-row"><a target="_blank" rel="noopener noreferrer" href="${item.url}">View source</a></p>
     </article>
   `;
 }
