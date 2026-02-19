@@ -16,6 +16,7 @@
     <div class="backdrop"></div>
     <main class="container">
       <header class="hero">
+        <p id="jokeTicker" class="joke-ticker">Loading market humor...</p>
         <p class="kicker">Financial Catalyst Intelligence</p>
         <h1>Market Catalyst Monitor</h1>
         <p class="subtitle">
@@ -26,8 +27,15 @@
       <section class="controls">
         <label>
           Tickers (comma-separated)
-          <input id="tickers" value="AAPL,MSFT,TSLA,NVDA" />
+          <input id="tickers" placeholder="Optional: custom symbols (e.g. TSLA,BTC-USD,GC=F)" />
         </label>
+        <fieldset class="asset-groups">
+          <legend>Asset Classes</legend>
+          <label class="check"><input type="checkbox" value="stocks" checked /> Stocks</label>
+          <label class="check"><input type="checkbox" value="crypto" checked /> Crypto</label>
+          <label class="check"><input type="checkbox" value="metals" checked /> Precious Metals</label>
+          <label class="check"><input type="checkbox" value="funds" checked /> Funds</label>
+        </fieldset>
         <label>
           Search keywords
           <input id="query" placeholder="e.g. dividend, guidance, earnings beat" />

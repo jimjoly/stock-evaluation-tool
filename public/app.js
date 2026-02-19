@@ -3,6 +3,32 @@ const resultsEl = document.getElementById("results");
 const searchBtn = document.getElementById("searchBtn");
 const tickersEl = document.getElementById("tickers");
 const queryEl = document.getElementById("query");
+const jokeTickerEl = document.getElementById("jokeTicker");
+const assetClassEls = Array.from(document.querySelectorAll('.asset-groups input[type="checkbox"]'));
+const jokes = [
+  "I bought the dip. Then it introduced me to its friend: the deeper dip.",
+  "My portfolio and I have a lot in common, we both need support at key levels.",
+  "Diversification is just me spreading my bad decisions across multiple assets.",
+  "I told my stocks a joke about resistance. They just couldn't break through.",
+  "Crypto taught me patience: mostly while waiting for my wallet to recover.",
+  "I asked for passive income, my ETF said: 'best I can do is market volatility.'",
+  "Gold is stable until you check it right after you brag about buying it.",
+  "My strategy is long-term investing and short-term overreacting."
+];
+
+function startJokeTicker() {
+  if (!jokeTickerEl) return;
+  let index = 0;
+  jokeTickerEl.textContent = jokes[index];
+
+  setInterval(() => {
+    index = (index + 1) % jokes.length;
+    jokeTickerEl.style.animation = "none";
+    jokeTickerEl.offsetHeight;
+    jokeTickerEl.style.animation = "";
+    jokeTickerEl.textContent = jokes[index];
+  }, 5000);
+}
 
 function fmtDate(value) {
   if (!value) return "Unknown date";
@@ -48,16 +74,30 @@ function render(items) {
 async function search() {
   const tickers = encodeURIComponent(tickersEl.value.trim());
   const q = encodeURIComponent(queryEl.value.trim());
-  statusEl.textContent = "Loading catalyst data...";
+  const assets = assetClassEls
+    .filter((el) => el.checked)
+    .map((el) => el.value)
+    .join(",");
+
+  if (!assets) {
+    statusEl.textContent = "Select at least one asset class.";
+    return;
+  }
+
+  statusEl.textContent = "Loading top 10 catalyst items...";
   searchBtn.disabled = true;
 
   try {
-    const response = await fetch(`/api/search?tickers=${tickers}&q=${q}`);
+    const response = await fetch(
+      `/api/search?tickers=${tickers}&assets=${encodeURIComponent(assets)}&q=${q}&limit=10`
+    );
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Request failed.");
 
     render(data.items || []);
-    statusEl.textContent = `Found ${data.count} items. Updated ${fmtDate(data.asOf)}.`;
+    statusEl.textContent = `Showing top ${data.count} of ${data.totalMatched} matched items across ${(
+      data.assetClasses || []
+    ).join(", ")}. Updated ${fmtDate(data.asOf)}.`;
   } catch (error) {
     statusEl.textContent = `Error: ${error.message}`;
     render([]);
@@ -75,3 +115,4 @@ tickersEl.addEventListener("keydown", (event) => {
 });
 
 search();
+startJokeTicker();
