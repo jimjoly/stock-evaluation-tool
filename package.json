@@ -1,7 +1,7 @@
 {
-  "name": "retirement-planner-web",
+  "name": "market-catalyst-monitor",
   "version": "1.0.0",
-  "description": "Retirement planner website with year-by-year projection modeling.",
+  "description": "Website that finds market-moving financial content and republishes concise impact summaries.",
   "main": "electron-main.js",
   "scripts": {
     "start": "node server.js",
@@ -9,14 +9,15 @@
     "dist:mac": "electron-builder --mac"
   },
   "keywords": [
-    "retirement",
-    "planner",
+    "stocks",
     "finance",
-    "projection"
+    "news",
+    "catalyst"
   ],
   "license": "MIT",
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "rss-parser": "^3.13.0"
   },
   "devDependencies": {
     "electron": "^33.2.1",
@@ -24,8 +25,8 @@
     "playwright": "^1.58.2"
   },
   "build": {
-    "appId": "com.retirement.planner",
-    "productName": "Retirement Planner",
+    "appId": "com.marketcatalyst.monitor",
+    "productName": "Market Catalyst Monitor",
     "files": [
       "electron-main.js",
       "server.js",
