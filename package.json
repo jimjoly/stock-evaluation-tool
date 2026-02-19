@@ -1,0 +1,45 @@
+{
+  "name": "market-catalyst-monitor",
+  "version": "1.0.0",
+  "description": "Website that finds market-moving financial content and republishes concise impact summaries.",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "node server.js",
+    "desktop": "electron .",
+    "dist:mac": "electron-builder --mac"
+  },
+  "keywords": [
+    "stocks",
+    "finance",
+    "news",
+    "catalyst"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "rss-parser": "^3.13.0"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "playwright": "^1.58.2"
+  },
+  "build": {
+    "appId": "com.marketcatalyst.monitor",
+    "productName": "Market Catalyst Monitor",
+    "files": [
+      "electron-main.js",
+      "server.js",
+      "public/**/*",
+      "package.json",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.finance",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    }
+  }
+}
