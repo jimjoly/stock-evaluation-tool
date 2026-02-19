@@ -58,6 +58,10 @@ const ASSET_PRESETS = {
   funds: ["SPY", "QQQ", "GLD"]
 };
 const TOP_RESULTS = 10;
+const SOURCE_WEIGHTS = {
+  "SEC Filings": 3,
+  "Yahoo Finance RSS": 1
+};
 
 function normalizeAssetClassInput(raw) {
   if (!raw) return ["stocks"];
@@ -249,11 +253,31 @@ function applyQueryFilter(items, query) {
   });
 }
 
+function applyTimeWindowFilter(items, windowKey) {
+  if (!windowKey || windowKey === "all") return items;
+  const now = Date.now();
+  const windows = {
+    "24h": 24 * 60 * 60 * 1000,
+    "7d": 7 * 24 * 60 * 60 * 1000
+  };
+  const span = windows[windowKey];
+  if (!span) return items;
+
+  return items.filter((item) => {
+    const published = new Date(item.publishedAt || "").getTime();
+    if (!Number.isFinite(published)) return false;
+    return now - published <= span;
+  });
+}
+
 function rankCatalystItems(items) {
   return [...items].sort((a, b) => {
     const aDirectional = a.impact.direction === "Unclear / Mixed" ? 0 : 1;
     const bDirectional = b.impact.direction === "Unclear / Mixed" ? 0 : 1;
     if (bDirectional !== aDirectional) return bDirectional - aDirectional;
+    const aSourceWeight = SOURCE_WEIGHTS[a.source] || 0;
+    const bSourceWeight = SOURCE_WEIGHTS[b.source] || 0;
+    if (bSourceWeight !== aSourceWeight) return bSourceWeight - aSourceWeight;
     if (b.impact.strength !== a.impact.strength) return b.impact.strength - a.impact.strength;
     if (b.impact.confidence !== a.impact.confidence) return b.impact.confidence - a.impact.confidence;
     const aTime = new Date(a.publishedAt || 0).getTime();
@@ -275,6 +299,7 @@ function createApp() {
     const assetClasses = normalizeAssetClassInput(String(req.query.assets || "stocks"));
     const tickers = resolveTickers(String(req.query.tickers || ""), assetClasses);
     const query = String(req.query.q || "").trim();
+    const timeWindow = String(req.query.window || "all").toLowerCase();
 
     if (!tickers.length) {
       return res.status(400).json({ error: "Provide at least one ticker symbol." });
@@ -291,13 +316,15 @@ function createApp() {
         allResults.push(...news, ...filings);
       }
 
-      const filtered = applyQueryFilter(allResults, query);
+      const filteredByQuery = applyQueryFilter(allResults, query);
+      const filtered = applyTimeWindowFilter(filteredByQuery, timeWindow);
       const ranked = rankCatalystItems(filtered);
 
       res.json({
         asOf: new Date().toISOString(),
         tickers,
         assetClasses,
+        timeWindow,
         query,
         count: Math.min(TOP_RESULTS, ranked.length),
         totalMatched: ranked.length,

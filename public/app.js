@@ -1,8 +1,10 @@
 const statusEl = document.getElementById("status");
 const resultsEl = document.getElementById("results");
 const searchBtn = document.getElementById("searchBtn");
+const shareBtn = document.getElementById("shareBtn");
 const tickersEl = document.getElementById("tickers");
 const queryEl = document.getElementById("query");
+const timeWindowEl = document.getElementById("timeWindow");
 const jokeTickerEl = document.getElementById("jokeTicker");
 const assetClassEls = Array.from(document.querySelectorAll('.asset-groups input[type="checkbox"]'));
 const jokes = [
@@ -71,31 +73,80 @@ function render(items) {
   resultsEl.innerHTML = items.map(cardTemplate).join("");
 }
 
-async function search() {
-  const tickers = encodeURIComponent(tickersEl.value.trim());
-  const q = encodeURIComponent(queryEl.value.trim());
-  const assets = assetClassEls
+function getSelectedAssets() {
+  return assetClassEls
     .filter((el) => el.checked)
     .map((el) => el.value)
     .join(",");
+}
+
+function syncUrlParams() {
+  const params = new URLSearchParams();
+  const tickers = tickersEl.value.trim();
+  const q = queryEl.value.trim();
+  const assets = getSelectedAssets();
+  const windowValue = timeWindowEl.value;
+
+  if (tickers) params.set("tickers", tickers);
+  if (q) params.set("q", q);
+  if (assets) params.set("assets", assets);
+  if (windowValue && windowValue !== "all") params.set("window", windowValue);
+
+  const next = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+  window.history.replaceState(null, "", next);
+}
+
+function hydrateFromUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const tickers = params.get("tickers");
+  const q = params.get("q");
+  const assets = params.get("assets");
+  const windowValue = params.get("window");
+
+  if (tickers) tickersEl.value = tickers;
+  if (q) queryEl.value = q;
+  if (windowValue && ["all", "24h", "7d"].includes(windowValue)) {
+    timeWindowEl.value = windowValue;
+  }
+  if (assets) {
+    const selected = new Set(
+      assets
+        .split(",")
+        .map((item) => item.trim().toLowerCase())
+        .filter(Boolean)
+    );
+    assetClassEls.forEach((el) => {
+      el.checked = selected.has(el.value);
+    });
+  }
+}
+
+async function search() {
+  const tickers = encodeURIComponent(tickersEl.value.trim());
+  const q = encodeURIComponent(queryEl.value.trim());
+  const assets = getSelectedAssets();
+  const windowValue = timeWindowEl.value;
 
   if (!assets) {
     statusEl.textContent = "Select at least one asset class.";
     return;
   }
 
+  syncUrlParams();
   statusEl.textContent = "Loading top 10 catalyst items...";
   searchBtn.disabled = true;
 
   try {
-    const response = await fetch(`/api/search?tickers=${tickers}&assets=${encodeURIComponent(assets)}&q=${q}`);
+    const response = await fetch(
+      `/api/search?tickers=${tickers}&assets=${encodeURIComponent(assets)}&q=${q}&window=${encodeURIComponent(windowValue)}`
+    );
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Request failed.");
 
     render(data.items || []);
     statusEl.textContent = `Showing top ${data.count} ranked items across ${(
       data.assetClasses || []
-    ).join(", ")} (${data.totalMatched} matched). Updated ${fmtDate(data.asOf)}.`;
+    ).join(", ")} (${data.totalMatched} matched, ${data.timeWindow}). Updated ${fmtDate(data.asOf)}.`;
   } catch (error) {
     statusEl.textContent = `Error: ${error.message}`;
     render([]);
@@ -104,7 +155,18 @@ async function search() {
   }
 }
 
+async function copyShareLink() {
+  syncUrlParams();
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    statusEl.textContent = "Share link copied to clipboard.";
+  } catch {
+    statusEl.textContent = "Unable to copy automatically. Copy the URL from your browser bar.";
+  }
+}
+
 searchBtn.addEventListener("click", search);
+shareBtn.addEventListener("click", copyShareLink);
 queryEl.addEventListener("keydown", (event) => {
   if (event.key === "Enter") search();
 });
@@ -112,5 +174,6 @@ tickersEl.addEventListener("keydown", (event) => {
   if (event.key === "Enter") search();
 });
 
+hydrateFromUrlParams();
 search();
 startJokeTicker();

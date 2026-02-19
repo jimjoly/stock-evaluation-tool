@@ -83,7 +83,7 @@ body {
 .controls {
   display: grid;
   gap: 12px;
-  grid-template-columns: 1fr 1.3fr 1fr auto;
+  grid-template-columns: 1fr 1.1fr 1fr 0.7fr auto auto;
   align-items: end;
   margin-top: 16px;
 }
@@ -96,6 +96,15 @@ label {
 }
 
 input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(5, 26, 39, 0.9);
+  color: var(--ink);
+}
+
+select {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -144,6 +153,12 @@ button {
 button:hover {
   transform: translateY(-1px);
   filter: brightness(1.08);
+}
+
+#shareBtn {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--ink);
+  border: 1px solid var(--border);
 }
 
 .meta {
