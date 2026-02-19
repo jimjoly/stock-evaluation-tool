@@ -105,7 +105,7 @@ function hydrateFromUrlParams() {
 
   if (tickers) tickersEl.value = tickers;
   if (q) queryEl.value = q;
-  if (windowValue && ["all", "24h", "7d"].includes(windowValue)) {
+  if (windowValue && ["all", "12h", "24h", "36h", "48h", "7d"].includes(windowValue)) {
     timeWindowEl.value = windowValue;
   }
   if (assets) {

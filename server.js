@@ -257,7 +257,10 @@ function applyTimeWindowFilter(items, windowKey) {
   if (!windowKey || windowKey === "all") return items;
   const now = Date.now();
   const windows = {
+    "12h": 12 * 60 * 60 * 1000,
     "24h": 24 * 60 * 60 * 1000,
+    "36h": 36 * 60 * 60 * 1000,
+    "48h": 48 * 60 * 60 * 1000,
     "7d": 7 * 24 * 60 * 60 * 1000
   };
   const span = windows[windowKey];
