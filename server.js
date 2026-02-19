@@ -51,6 +51,32 @@ const NEGATIVE_SIGNALS = [
   "loss widens"
 ];
 
+const ASSET_PRESETS = {
+  stocks: ["AAPL", "MSFT", "NVDA", "AMZN"],
+  crypto: ["BTC-USD", "ETH-USD", "SOL-USD"],
+  metals: ["GC=F", "SI=F"],
+  funds: ["SPY", "QQQ", "GLD"]
+};
+const TOP_RESULTS = 10;
+
+function normalizeAssetClassInput(raw) {
+  if (!raw) return ["stocks"];
+  const classes = raw
+    .split(",")
+    .map((item) => item.trim().toLowerCase())
+    .filter((item) => Object.hasOwn(ASSET_PRESETS, item));
+  return classes.length ? [...new Set(classes)] : ["stocks"];
+}
+
+function resolveTickers(rawTickers, assetClasses) {
+  const custom = normalizeTickerInput(rawTickers);
+  if (custom.length) {
+    return custom;
+  }
+  const preset = assetClasses.flatMap((assetClass) => ASSET_PRESETS[assetClass] || []);
+  return [...new Set(preset)].slice(0, 24);
+}
+
 function normalizeTickerInput(raw) {
   if (!raw) return [];
   return raw
@@ -87,6 +113,7 @@ function scoreImpact(text = "") {
     return {
       direction: "Likely Upward",
       confidence,
+      strength: Math.abs(net),
       rationale: `Detected ${positive} positive catalyst signal(s) and ${negative} negative signal(s).`
     };
   }
@@ -95,6 +122,7 @@ function scoreImpact(text = "") {
     return {
       direction: "Likely Downward",
       confidence,
+      strength: Math.abs(net),
       rationale: `Detected ${negative} negative catalyst signal(s) and ${positive} positive signal(s).`
     };
   }
@@ -102,6 +130,7 @@ function scoreImpact(text = "") {
   return {
     direction: "Unclear / Mixed",
     confidence: 0.5,
+    strength: 0,
     rationale: "No strong directional catalyst language detected."
   };
 }
@@ -220,6 +249,19 @@ function applyQueryFilter(items, query) {
   });
 }
 
+function rankCatalystItems(items) {
+  return [...items].sort((a, b) => {
+    const aDirectional = a.impact.direction === "Unclear / Mixed" ? 0 : 1;
+    const bDirectional = b.impact.direction === "Unclear / Mixed" ? 0 : 1;
+    if (bDirectional !== aDirectional) return bDirectional - aDirectional;
+    if (b.impact.strength !== a.impact.strength) return b.impact.strength - a.impact.strength;
+    if (b.impact.confidence !== a.impact.confidence) return b.impact.confidence - a.impact.confidence;
+    const aTime = new Date(a.publishedAt || 0).getTime();
+    const bTime = new Date(b.publishedAt || 0).getTime();
+    return bTime - aTime;
+  });
+}
+
 function createApp() {
   const app = express();
 
@@ -230,7 +272,8 @@ function createApp() {
   app.use(express.static(path.join(__dirname, "public")));
 
   app.get("/api/search", async (req, res) => {
-    const tickers = normalizeTickerInput(req.query.tickers || "AAPL,MSFT,TSLA,NVDA");
+    const assetClasses = normalizeAssetClassInput(String(req.query.assets || "stocks"));
+    const tickers = resolveTickers(String(req.query.tickers || ""), assetClasses);
     const query = String(req.query.q || "").trim();
 
     if (!tickers.length) {
@@ -248,18 +291,17 @@ function createApp() {
         allResults.push(...news, ...filings);
       }
 
-      const filtered = applyQueryFilter(allResults, query).sort((a, b) => {
-        const aTime = new Date(a.publishedAt || 0).getTime();
-        const bTime = new Date(b.publishedAt || 0).getTime();
-        return bTime - aTime;
-      });
+      const filtered = applyQueryFilter(allResults, query);
+      const ranked = rankCatalystItems(filtered);
 
       res.json({
         asOf: new Date().toISOString(),
         tickers,
+        assetClasses,
         query,
-        count: filtered.length,
-        items: filtered.slice(0, 120)
+        count: Math.min(TOP_RESULTS, ranked.length),
+        totalMatched: ranked.length,
+        items: ranked.slice(0, TOP_RESULTS)
       });
     } catch (error) {
       res.status(500).json({

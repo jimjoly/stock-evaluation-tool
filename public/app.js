@@ -88,16 +88,14 @@ async function search() {
   searchBtn.disabled = true;
 
   try {
-    const response = await fetch(
-      `/api/search?tickers=${tickers}&assets=${encodeURIComponent(assets)}&q=${q}&limit=10`
-    );
+    const response = await fetch(`/api/search?tickers=${tickers}&assets=${encodeURIComponent(assets)}&q=${q}`);
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Request failed.");
 
     render(data.items || []);
-    statusEl.textContent = `Showing top ${data.count} of ${data.totalMatched} matched items across ${(
+    statusEl.textContent = `Showing top ${data.count} ranked items across ${(
       data.assetClasses || []
-    ).join(", ")}. Updated ${fmtDate(data.asOf)}.`;
+    ).join(", ")} (${data.totalMatched} matched). Updated ${fmtDate(data.asOf)}.`;
   } catch (error) {
     statusEl.textContent = `Error: ${error.message}`;
     render([]);
