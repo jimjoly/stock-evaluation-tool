@@ -1,36 +1,10 @@
 const statusEl = document.getElementById("status");
 const resultsEl = document.getElementById("results");
 const searchBtn = document.getElementById("searchBtn");
-const shareBtn = document.getElementById("shareBtn");
 const tickersEl = document.getElementById("tickers");
 const queryEl = document.getElementById("query");
 const timeWindowEl = document.getElementById("timeWindow");
-const jokeTickerEl = document.getElementById("jokeTicker");
 const assetClassEls = Array.from(document.querySelectorAll('.asset-groups input[type="checkbox"]'));
-const jokes = [
-  "I bought the dip. Then it introduced me to its friend: the deeper dip.",
-  "My portfolio and I have a lot in common, we both need support at key levels.",
-  "Diversification is just me spreading my bad decisions across multiple assets.",
-  "I told my stocks a joke about resistance. They just couldn't break through.",
-  "Crypto taught me patience: mostly while waiting for my wallet to recover.",
-  "I asked for passive income, my ETF said: 'best I can do is market volatility.'",
-  "Gold is stable until you check it right after you brag about buying it.",
-  "My strategy is long-term investing and short-term overreacting."
-];
-
-function startJokeTicker() {
-  if (!jokeTickerEl) return;
-  let index = 0;
-  jokeTickerEl.textContent = jokes[index];
-
-  setInterval(() => {
-    index = (index + 1) % jokes.length;
-    jokeTickerEl.style.animation = "none";
-    jokeTickerEl.offsetHeight;
-    jokeTickerEl.style.animation = "";
-    jokeTickerEl.textContent = jokes[index];
-  }, 5000);
-}
 
 function fmtDate(value) {
   if (!value) return "Unknown date";
@@ -90,7 +64,7 @@ function syncUrlParams() {
   if (tickers) params.set("tickers", tickers);
   if (q) params.set("q", q);
   if (assets) params.set("assets", assets);
-  if (windowValue && windowValue !== "all") params.set("window", windowValue);
+  if (windowValue && windowValue !== "12h") params.set("window", windowValue);
 
   const next = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
   window.history.replaceState(null, "", next);
@@ -107,6 +81,8 @@ function hydrateFromUrlParams() {
   if (q) queryEl.value = q;
   if (windowValue && ["all", "12h", "24h", "36h", "48h", "7d"].includes(windowValue)) {
     timeWindowEl.value = windowValue;
+  } else {
+    timeWindowEl.value = "12h";
   }
   if (assets) {
     const selected = new Set(
@@ -155,18 +131,7 @@ async function search() {
   }
 }
 
-async function copyShareLink() {
-  syncUrlParams();
-  try {
-    await navigator.clipboard.writeText(window.location.href);
-    statusEl.textContent = "Share link copied to clipboard.";
-  } catch {
-    statusEl.textContent = "Unable to copy automatically. Copy the URL from your browser bar.";
-  }
-}
-
 searchBtn.addEventListener("click", search);
-shareBtn.addEventListener("click", copyShareLink);
 queryEl.addEventListener("keydown", (event) => {
   if (event.key === "Enter") search();
 });
@@ -174,6 +139,20 @@ tickersEl.addEventListener("keydown", (event) => {
   if (event.key === "Enter") search();
 });
 
-hydrateFromUrlParams();
-search();
-startJokeTicker();
+function init() {
+  hydrateFromUrlParams();
+  search();
+
+  // Fallback retry in case the first request is interrupted during page boot.
+  setTimeout(() => {
+    if (!resultsEl.children.length) {
+      search();
+    }
+  }, 1200);
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init, { once: true });
+} else {
+  init();
+}
