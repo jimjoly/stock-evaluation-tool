@@ -19,6 +19,25 @@ function impactClass(direction) {
   return "flat";
 }
 
+function googleFinanceUrl(ticker = "") {
+  const symbol = String(ticker).trim().toUpperCase();
+  const exchangeMap = {
+    AAPL: "NASDAQ",
+    MSFT: "NASDAQ",
+    NVDA: "NASDAQ",
+    AMZN: "NASDAQ",
+    SPY: "NYSEARCA",
+    QQQ: "NASDAQ",
+    GLD: "NYSEARCA"
+  };
+
+  if (exchangeMap[symbol]) {
+    return `https://www.google.com/finance/quote/${encodeURIComponent(symbol)}:${exchangeMap[symbol]}`;
+  }
+
+  return `https://www.google.com/finance/quote/${encodeURIComponent(symbol)}`;
+}
+
 function cardTemplate(item) {
   const cls = impactClass(item.impact.direction);
   const confidence = Math.round(item.impact.confidence * 100);
@@ -33,7 +52,11 @@ function cardTemplate(item) {
       </div>
       <p class="summary">${item.summary}</p>
       <p class="meta-row">Rationale: ${item.impact.rationale}</p>
-      <p class="meta-row"><a target="_blank" rel="noopener noreferrer" href="${item.url}">View source</a></p>
+      <p class="meta-row">
+        <a target="_blank" rel="noopener noreferrer" href="${item.url}">View source</a>
+        ·
+        <a target="_blank" rel="noopener noreferrer" href="${googleFinanceUrl(item.ticker)}">Google Finance</a>
+      </p>
     </article>
   `;
 }
