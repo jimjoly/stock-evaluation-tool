@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: market-catalyst-monitor
+    name: retirement-planner-web
     env: node
     plan: free
     buildCommand: npm install
@@ -9,5 +9,3 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: CONTACT_EMAIL
-        sync: false

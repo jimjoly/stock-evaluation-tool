@@ -1,158 +1,226 @@
 const statusEl = document.getElementById("status");
-const resultsEl = document.getElementById("results");
-const searchBtn = document.getElementById("searchBtn");
-const tickersEl = document.getElementById("tickers");
-const queryEl = document.getElementById("query");
-const timeWindowEl = document.getElementById("timeWindow");
-const assetClassEls = Array.from(document.querySelectorAll('.asset-groups input[type="checkbox"]'));
+const summaryEl = document.getElementById("summary");
+const tableBodyEl = document.querySelector("#projectionTable tbody");
+const rowCountEl = document.getElementById("rowCount");
+const chartEl = document.getElementById("balanceChart");
+const depletionBadgeEl = document.getElementById("depletionBadge");
+const calculateBtn = document.getElementById("calculateBtn");
 
-function fmtDate(value) {
-  if (!value) return "Unknown date";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return value;
-  return d.toLocaleString();
+const fieldIds = [
+  "currentAge",
+  "retirementAge",
+  "lifeExpectancy",
+  "currentSavings",
+  "annualContribution",
+  "contributionGrowth",
+  "preReturn",
+  "postReturn",
+  "annualSpending",
+  "inflation",
+  "socialSecurity"
+];
+
+const fields = Object.fromEntries(fieldIds.map((id) => [id, document.getElementById(id)]));
+
+const currencyFmt = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0
+});
+
+const intFmt = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+
+function toNumber(input) {
+  const value = Number(input.value);
+  return Number.isFinite(value) ? value : 0;
 }
 
-function impactClass(direction) {
-  if (direction.includes("Upward")) return "up";
-  if (direction.includes("Downward")) return "down";
-  return "flat";
+function readInputs() {
+  return {
+    currentAge: toNumber(fields.currentAge),
+    retirementAge: toNumber(fields.retirementAge),
+    lifeExpectancy: toNumber(fields.lifeExpectancy),
+    currentSavings: toNumber(fields.currentSavings),
+    annualContribution: toNumber(fields.annualContribution),
+    contributionGrowth: toNumber(fields.contributionGrowth) / 100,
+    preReturn: toNumber(fields.preReturn) / 100,
+    postReturn: toNumber(fields.postReturn) / 100,
+    annualSpending: toNumber(fields.annualSpending),
+    inflation: toNumber(fields.inflation) / 100,
+    socialSecurity: toNumber(fields.socialSecurity)
+  };
 }
 
-function cardTemplate(item) {
-  const cls = impactClass(item.impact.direction);
-  const confidence = Math.round(item.impact.confidence * 100);
-  return `
-    <article class="card">
-      <div class="card-head">
-        <div>
-          <h3 class="title">${item.title}</h3>
-          <p class="meta-row">${item.ticker} · ${item.source} · ${fmtDate(item.publishedAt)}</p>
-        </div>
-        <span class="impact ${cls}">${item.impact.direction} (${confidence}%)</span>
-      </div>
-      <p class="summary">${item.summary}</p>
-      <p class="meta-row">Rationale: ${item.impact.rationale}</p>
-      <p class="meta-row"><a target="_blank" rel="noopener noreferrer" href="${item.url}">View source</a></p>
-    </article>
+function validate(inputs) {
+  if (inputs.retirementAge <= inputs.currentAge) {
+    return "Retirement age must be greater than current age.";
+  }
+  if (inputs.lifeExpectancy <= inputs.retirementAge) {
+    return "Life expectancy must be greater than retirement age.";
+  }
+  if (inputs.currentSavings < 0 || inputs.annualContribution < 0 || inputs.annualSpending < 0) {
+    return "Savings, contribution, and spending values must be zero or higher.";
+  }
+  return null;
+}
+
+function calculateProjection(inputs) {
+  const rows = [];
+  let endBalance = inputs.currentSavings;
+
+  for (let age = inputs.currentAge; age <= inputs.lifeExpectancy; age += 1) {
+    const year = age - inputs.currentAge + 1;
+    const startBalance = endBalance;
+    const yearsFromNow = age - inputs.currentAge;
+    const yearsInRetirement = Math.max(0, age - inputs.retirementAge);
+    const inRetirement = age >= inputs.retirementAge;
+
+    const contribution = inRetirement
+      ? 0
+      : inputs.annualContribution * (1 + inputs.contributionGrowth) ** yearsFromNow;
+    const rate = inRetirement ? inputs.postReturn : inputs.preReturn;
+    const investmentReturn = startBalance * rate;
+    const socialSecurity = inRetirement
+      ? inputs.socialSecurity * (1 + inputs.inflation) ** yearsInRetirement
+      : 0;
+    const spending = inRetirement
+      ? inputs.annualSpending * (1 + inputs.inflation) ** yearsInRetirement
+      : 0;
+
+    const netCashFlow = contribution + investmentReturn + socialSecurity - spending;
+    endBalance = Math.max(0, startBalance + netCashFlow);
+
+    let status = "Accumulating";
+    if (inRetirement) {
+      status = endBalance <= 0 ? "Depleted" : "Funded";
+    }
+
+    rows.push({
+      year,
+      age,
+      startBalance,
+      contribution,
+      investmentReturn,
+      socialSecurity,
+      spending,
+      netCashFlow,
+      endBalance,
+      status
+    });
+  }
+
+  return rows;
+}
+
+function summaryMetrics(rows, inputs) {
+  const retirementRow = rows.find((row) => row.age === inputs.retirementAge) || rows[0];
+  const finalRow = rows[rows.length - 1];
+  const depletionRow = rows.find((row) => row.status === "Depleted");
+  const gapAtRetirement = Math.max(0, retirementRow.spending - retirementRow.socialSecurity);
+
+  return {
+    retirementBalance: retirementRow.startBalance,
+    finalBalance: finalRow.endBalance,
+    depletionAge: depletionRow ? depletionRow.age : null,
+    firstYearSpending: retirementRow.spending,
+    incomeGap: gapAtRetirement,
+    health: depletionRow ? "Needs Adjustment" : "On Track"
+  };
+}
+
+function metricCard(label, value, tone = "") {
+  const toneClass = tone ? ` ${tone}` : "";
+  return `<article class="card metric${toneClass}"><p class="meta-row">${label}</p><h3 class="title">${value}</h3></article>`;
+}
+
+function renderSummary(metrics) {
+  summaryEl.innerHTML = [
+    metricCard("Projected Balance at Retirement", currencyFmt.format(metrics.retirementBalance)),
+    metricCard("Final Balance at Life Expectancy", currencyFmt.format(metrics.finalBalance), metrics.finalBalance === 0 ? "warn" : ""),
+    metricCard("First Depletion Age", metrics.depletionAge ? intFmt.format(metrics.depletionAge) : "Not Depleted", metrics.depletionAge ? "warn" : ""),
+    metricCard("First-Year Retirement Spending", currencyFmt.format(metrics.firstYearSpending)),
+    metricCard("Income Gap at Retirement", currencyFmt.format(metrics.incomeGap), metrics.incomeGap > 0 ? "warn" : ""),
+    metricCard("Plan Health", metrics.health, metrics.health === "On Track" ? "good" : "warn")
+  ].join("");
+
+  depletionBadgeEl.textContent = metrics.depletionAge
+    ? `Depletion starts at age ${metrics.depletionAge}`
+    : "No depletion detected";
+  depletionBadgeEl.className = `badge ${metrics.depletionAge ? "warn" : "good"}`;
+}
+
+function renderTable(rows) {
+  tableBodyEl.innerHTML = rows
+    .map(
+      (row) => `
+      <tr>
+        <td>${row.year}</td>
+        <td>${row.age}</td>
+        <td>${currencyFmt.format(row.startBalance)}</td>
+        <td>${currencyFmt.format(row.contribution)}</td>
+        <td>${currencyFmt.format(row.investmentReturn)}</td>
+        <td>${currencyFmt.format(row.socialSecurity)}</td>
+        <td>${currencyFmt.format(row.spending)}</td>
+        <td class="${row.netCashFlow < 0 ? "negative" : ""}">${currencyFmt.format(row.netCashFlow)}</td>
+        <td>${currencyFmt.format(row.endBalance)}</td>
+        <td><span class="impact ${row.status === "Depleted" ? "down" : row.status === "Funded" ? "up" : "flat"}">${row.status}</span></td>
+      </tr>
+    `
+    )
+    .join("");
+
+  rowCountEl.textContent = `${rows.length} years`;
+}
+
+function renderChart(rows) {
+  const width = 900;
+  const height = 320;
+  const padX = 36;
+  const padY = 24;
+  const maxBalance = Math.max(...rows.map((r) => r.endBalance), 1);
+
+  const points = rows
+    .map((row, i) => {
+      const x = padX + (i / (rows.length - 1 || 1)) * (width - padX * 2);
+      const y = height - padY - (row.endBalance / maxBalance) * (height - padY * 2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+
+  chartEl.innerHTML = `
+    <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"></rect>
+    <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.25)" />
+    <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${height - padY}" stroke="rgba(255,255,255,0.25)" />
+    <polyline points="${points}" fill="none" stroke="#20e39a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline>
   `;
 }
 
-function render(items) {
-  if (!items.length) {
-    resultsEl.innerHTML =
-      '<article class="card"><h3 class="title">No results</h3><p class="summary">Try broader tickers or remove keyword filters.</p></article>';
-    return;
-  }
-  resultsEl.innerHTML = items.map(cardTemplate).join("");
-}
+function runPlanner() {
+  const inputs = readInputs();
+  const error = validate(inputs);
 
-function getSelectedAssets() {
-  return assetClassEls
-    .filter((el) => el.checked)
-    .map((el) => el.value)
-    .join(",");
-}
-
-function syncUrlParams() {
-  const params = new URLSearchParams();
-  const tickers = tickersEl.value.trim();
-  const q = queryEl.value.trim();
-  const assets = getSelectedAssets();
-  const windowValue = timeWindowEl.value;
-
-  if (tickers) params.set("tickers", tickers);
-  if (q) params.set("q", q);
-  if (assets) params.set("assets", assets);
-  if (windowValue && windowValue !== "12h") params.set("window", windowValue);
-
-  const next = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
-  window.history.replaceState(null, "", next);
-}
-
-function hydrateFromUrlParams() {
-  const params = new URLSearchParams(window.location.search);
-  const tickers = params.get("tickers");
-  const q = params.get("q");
-  const assets = params.get("assets");
-  const windowValue = params.get("window");
-
-  if (tickers) tickersEl.value = tickers;
-  if (q) queryEl.value = q;
-  if (windowValue && ["all", "12h", "24h", "36h", "48h", "7d"].includes(windowValue)) {
-    timeWindowEl.value = windowValue;
-  } else {
-    timeWindowEl.value = "12h";
-  }
-  if (assets) {
-    const selected = new Set(
-      assets
-        .split(",")
-        .map((item) => item.trim().toLowerCase())
-        .filter(Boolean)
-    );
-    assetClassEls.forEach((el) => {
-      el.checked = selected.has(el.value);
-    });
-  }
-}
-
-async function search() {
-  const tickers = encodeURIComponent(tickersEl.value.trim());
-  const q = encodeURIComponent(queryEl.value.trim());
-  const assets = getSelectedAssets();
-  const windowValue = timeWindowEl.value;
-
-  if (!assets) {
-    statusEl.textContent = "Select at least one asset class.";
+  if (error) {
+    statusEl.textContent = error;
+    statusEl.classList.add("error");
     return;
   }
 
-  syncUrlParams();
-  statusEl.textContent = "Loading top 10 catalyst items...";
-  searchBtn.disabled = true;
+  const projection = calculateProjection(inputs);
+  const metrics = summaryMetrics(projection, inputs);
 
-  try {
-    const response = await fetch(
-      `/api/search?tickers=${tickers}&assets=${encodeURIComponent(assets)}&q=${q}&window=${encodeURIComponent(windowValue)}`
-    );
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Request failed.");
+  renderSummary(metrics);
+  renderTable(projection);
+  renderChart(projection);
 
-    render(data.items || []);
-    statusEl.textContent = `Showing top ${data.count} ranked items across ${(
-      data.assetClasses || []
-    ).join(", ")} (${data.totalMatched} matched, ${data.timeWindow}). Updated ${fmtDate(data.asOf)}.`;
-  } catch (error) {
-    statusEl.textContent = `Error: ${error.message}`;
-    render([]);
-  } finally {
-    searchBtn.disabled = false;
-  }
+  statusEl.classList.remove("error");
+  statusEl.textContent = `Updated ${new Date().toLocaleString()} · ${projection.length} years projected.`;
 }
 
-searchBtn.addEventListener("click", search);
-queryEl.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") search();
-});
-tickersEl.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") search();
+calculateBtn.addEventListener("click", runPlanner);
+fieldIds.forEach((id) => {
+  fields[id].addEventListener("keydown", (event) => {
+    if (event.key === "Enter") runPlanner();
+  });
 });
 
-function init() {
-  hydrateFromUrlParams();
-  search();
-
-  // Fallback retry in case the first request is interrupted during page boot.
-  setTimeout(() => {
-    if (!resultsEl.children.length) {
-      search();
-    }
-  }, 1200);
-}
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init, { once: true });
-} else {
-  init();
-}
+runPlanner();
