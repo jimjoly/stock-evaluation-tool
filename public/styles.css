@@ -96,6 +96,7 @@ input {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 12px;
+  min-height: 44px;
   padding: 10px 12px;
   background: rgba(5, 26, 39, 0.9);
   color: var(--ink);
@@ -162,7 +163,7 @@ fieldset.asset-groups {
 .controls-main {
   display: grid;
   gap: 12px;
-  grid-template-columns: 1.2fr 1.2fr 0.9fr auto;
+  grid-template-columns: 1fr 1fr 1fr auto;
   align-items: end;
 }
 
