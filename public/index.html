@@ -25,34 +25,39 @@
       </header>
 
       <section class="controls">
-        <label>
-          Tickers (comma-separated)
-          <input id="tickers" placeholder="Optional: custom symbols (e.g. TSLA,BTC-USD,GC=F)" />
-        </label>
         <fieldset class="asset-groups">
           <legend>Asset Classes</legend>
-          <label class="check"><input type="checkbox" value="stocks" checked /> Stocks</label>
-          <label class="check"><input type="checkbox" value="crypto" checked /> Crypto</label>
-          <label class="check"><input type="checkbox" value="metals" checked /> Precious Metals</label>
-          <label class="check"><input type="checkbox" value="funds" checked /> Funds</label>
+          <div class="asset-grid">
+            <label class="check"><input type="checkbox" value="stocks" checked /> Stocks</label>
+            <label class="check"><input type="checkbox" value="crypto" checked /> Crypto</label>
+            <label class="check"><input type="checkbox" value="metals" checked /> Precious Metals</label>
+            <label class="check"><input type="checkbox" value="funds" checked /> Funds</label>
+          </div>
         </fieldset>
-        <label>
-          Search keywords
-          <input id="query" placeholder="e.g. dividend, guidance, earnings beat" />
-        </label>
-        <label>
-          Time Window
-          <select id="timeWindow">
-            <option value="all">All</option>
-            <option value="12h">Past 12 hours</option>
-            <option value="24h">Last 24h</option>
-            <option value="36h">Past 36 hours</option>
-            <option value="48h">Past 48 hours</option>
-            <option value="7d">Last 7 days</option>
-          </select>
-        </label>
-        <button id="searchBtn">Search Catalysts</button>
-        <button id="shareBtn" type="button">Copy Share Link</button>
+
+        <div class="controls-main">
+          <label>
+            Tickers (comma-separated)
+            <input id="tickers" placeholder="Optional: custom symbols (e.g. TSLA,BTC-USD,GC=F)" />
+          </label>
+          <label>
+            Search keywords
+            <input id="query" placeholder="e.g. dividend, guidance, earnings beat" />
+          </label>
+          <label>
+            Time Window
+            <select id="timeWindow">
+              <option value="all">All</option>
+              <option value="12h">Past 12 hours</option>
+              <option value="24h">Last 24h</option>
+              <option value="36h">Past 36 hours</option>
+              <option value="48h">Past 48 hours</option>
+              <option value="7d">Last 7 days</option>
+            </select>
+          </label>
+          <button id="searchBtn">Search Catalysts</button>
+          <button id="shareBtn" type="button">Copy Share Link</button>
+        </div>
       </section>
 
       <section class="meta">
