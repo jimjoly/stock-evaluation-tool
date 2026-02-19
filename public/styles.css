@@ -50,18 +50,6 @@ body {
   text-align: center;
 }
 
-.joke-ticker {
-  margin: 0 auto 10px;
-  display: inline-block;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #d9f8ff;
-  font-weight: 500;
-  animation: fadeSlide 320ms ease both;
-}
-
 .kicker {
   margin: 0;
   letter-spacing: 0.16em;
@@ -79,6 +67,12 @@ body {
   max-width: 760px;
   margin: 0 auto;
   color: var(--muted);
+}
+
+.disclaimer-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
 }
 
 .controls {
@@ -192,7 +186,7 @@ button:hover {
 .meta {
   margin-top: 14px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   color: var(--muted);
 }
