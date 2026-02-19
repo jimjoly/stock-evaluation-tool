@@ -219,12 +219,6 @@ button:hover {
   text-align: center;
 }
 
-.footer-logo {
-  width: min(520px, 92%);
-  height: auto;
-  display: block;
-}
-
 .footer-copy {
   margin: 10px 0 0;
   color: var(--muted);
