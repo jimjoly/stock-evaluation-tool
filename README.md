@@ -71,6 +71,49 @@ git push -u origin main
 - Health check: `https://YOUR-RENDER-URL/healthz`
 - App: `https://YOUR-RENDER-URL/`
 
+## Host publicly (Railway)
+
+1. Push this repo to GitHub.
+2. Go to [Railway](https://railway.app) -> **New Project** -> **Deploy from GitHub repo**.
+3. Select this repository (it uses `railway.json` + `Dockerfile`).
+4. In Variables, set:
+   - `NODE_ENV=production`
+   - `CONTACT_EMAIL=you@example.com`
+5. Deploy and open the generated Railway domain.
+
+Verify:
+
+- Health check: `https://YOUR-RAILWAY-URL/healthz`
+- App: `https://YOUR-RAILWAY-URL/`
+
+## Host publicly (Fly.io)
+
+1. Install Fly CLI and sign in:
+
+```bash
+brew install flyctl
+fly auth login
+```
+
+2. From this project folder, create/update the app and set secret:
+
+```bash
+fly launch --no-deploy
+fly secrets set CONTACT_EMAIL=you@example.com
+fly deploy
+```
+
+3. Open your app:
+
+```bash
+fly open
+```
+
+Verify:
+
+- Health check: `https://YOUR-FLY-URL/healthz`
+- App: `https://YOUR-FLY-URL/`
+
 ## Environment variables
 
 - `PORT`: Port provided by hosting platform (Render sets this automatically).
