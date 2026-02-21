@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const Parser = require("rss-parser");
+const { attachFamilyWordGameRoutes } = require("./family-word-game-server");
 
 const parser = new Parser();
 
@@ -1072,6 +1073,7 @@ function getSourceBreakdown(stocks) {
 
 function createApp() {
   const app = express();
+  app.use(express.json({ limit: "1mb" }));
 
   app.get("/healthz", (_req, res) => {
     res.status(200).json({ ok: true, service: "investment-tools-suite", asOf: new Date().toISOString() });
@@ -1173,6 +1175,8 @@ function createApp() {
     }
   });
 
+  attachFamilyWordGameRoutes(app);
+
   app.use(express.static(path.join(__dirname, "public")));
 
   app.get("/", (_req, res) => {
@@ -1189,6 +1193,10 @@ function createApp() {
 
   app.get("/stock-catalyst", (_req, res) => {
     res.sendFile(path.join(__dirname, "public", "stock-catalyst", "index.html"));
+  });
+
+  app.get("/family-word-game", (_req, res) => {
+    res.sendFile(path.join(__dirname, "public", "family-word-game", "index.html"));
   });
 
   app.get("*", (_req, res) => {

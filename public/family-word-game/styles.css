@@ -1,0 +1,266 @@
+:root {
+  --bg-a: #fff8db;
+  --bg-b: #c8e6c8;
+  --ink: #12303a;
+  --panel: #ffffffdd;
+  --line: #96aeb2;
+  --teal: #3f9a94;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Nunito", sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at 20% 10%, var(--bg-a), var(--bg-b));
+}
+
+.shell {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+h1,
+h2 {
+  font-family: "Baloo 2", cursive;
+  margin: 0;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+.sub {
+  margin: 0.3rem 0 0;
+}
+
+.home-link {
+  text-decoration: none;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid #ffffff;
+  box-shadow: 0 20px 40px #28435e26;
+  border-radius: 18px;
+  padding: 1rem;
+}
+
+.panel + .panel {
+  margin-top: 1rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.setup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.8rem;
+  margin: 0.8rem 0 1rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  gap: 0.35rem;
+}
+
+.check-row {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.55rem 0.65rem;
+}
+
+.check-row input {
+  width: 18px;
+  height: 18px;
+}
+
+.check-row.inline {
+  width: auto;
+  padding: 0.4rem 0.55rem;
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+input,
+select {
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 0.48rem 0.58rem;
+  background: #fff;
+}
+
+button {
+  border: 1px solid #527780;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  padding: 0.52rem 0.75rem;
+  cursor: pointer;
+}
+
+button.primary {
+  background: linear-gradient(120deg, var(--teal), #2f7b77);
+  color: #fff;
+  border-color: #2d6865;
+}
+
+button:hover {
+  filter: brightness(1.05);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.lobby-players {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0.9rem;
+}
+
+.lobby-player {
+  border: 1px solid #9bb0b2;
+  border-radius: 10px;
+  background: #f4f7f7;
+  padding: 0.45rem 0.6rem;
+}
+
+#gameCanvas {
+  width: 100%;
+  max-width: 980px;
+  border-radius: 14px;
+  border: 1px solid #6b8f94;
+  background: #eff8f8;
+  display: block;
+}
+
+.controls {
+  margin-top: 0.8rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.room-banner {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.rack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.rack-tile {
+  min-width: 48px;
+  border: 1px solid #8b794c;
+  border-radius: 10px;
+  padding: 0.4rem 0.45rem;
+  background: linear-gradient(180deg, #f9e6ba, #ebd094);
+  position: relative;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.rack-tile small {
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  font-size: 0.7rem;
+}
+
+.rack-tile.selected {
+  outline: 3px solid #e26a3c;
+}
+
+.help {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: #0e2d3373;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: min(520px, 100%);
+  background: #fffef0;
+  border: 1px solid #9caeb2;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 20px 45px #00121840;
+}
+
+.blank-choices {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 0.9rem 0 1rem;
+}
+
+.blank-letter {
+  font-weight: 700;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #c9d6d8;
+  margin: 1rem 0;
+}
+
+@media (max-width: 760px) {
+  .shell {
+    padding: 1rem 0.5rem 1.5rem;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joly Family Word Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Nunito:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/family-word-game/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Online Multiplayer</p>
+          <h1>Joly Family Word Game</h1>
+          <p class="sub">Scrabble-style room game for 2-4 players over the internet.</p>
+        </div>
+        <a class="home-link" href="/">Back to tools</a>
+      </header>
+
+      <section id="connectPanel" class="panel">
+        <h2>Create Or Join Room</h2>
+        <div class="setup-grid">
+          <label>
+            Your name
+            <input id="playerName" type="text" maxlength="24" value="Player" />
+          </label>
+          <label class="check-row">
+            <input id="strictDictionary" type="checkbox" checked />
+            Strict dictionary mode
+          </label>
+        </div>
+        <div class="actions">
+          <button id="createRoomBtn" class="primary">Create Room</button>
+        </div>
+        <hr />
+        <div class="setup-grid">
+          <label>
+            Room code
+            <input id="joinCode" type="text" maxlength="6" placeholder="AB12CD" />
+          </label>
+        </div>
+        <div class="actions">
+          <button id="joinRoomBtn">Join Room</button>
+        </div>
+      </section>
+
+      <section id="lobbyPanel" class="panel hidden">
+        <h2>Lobby</h2>
+        <p>Room code: <strong id="roomCodeLabel">-</strong></p>
+        <p id="lobbyStatus">Waiting...</p>
+        <div id="lobbyPlayers" class="lobby-players"></div>
+        <div class="actions">
+          <button id="startGameBtn" class="primary">Start Game</button>
+          <button id="leaveBtn">Leave</button>
+        </div>
+      </section>
+
+      <section id="gamePanel" class="panel hidden">
+        <canvas id="gameCanvas" width="980" height="700" aria-label="Game board"></canvas>
+        <div class="controls">
+          <div id="roomBanner" class="room-banner"></div>
+          <div id="rack" class="rack"></div>
+          <div class="actions">
+            <button id="submitBtn" class="primary">Submit Turn</button>
+            <button id="recallBtn">Recall Tiles</button>
+            <button id="swapBtn">Swap Rack</button>
+            <button id="passBtn">Pass</button>
+            <label class="check-row inline">
+              <input id="strictDictionaryGame" type="checkbox" checked />
+              Strict dictionary
+            </label>
+          </div>
+          <p id="message" class="help"></p>
+        </div>
+      </section>
+    </main>
+
+    <section id="blankModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card">
+        <h2>Choose Blank Tile Letter</h2>
+        <div id="blankChoices" class="blank-choices"></div>
+        <button id="blankCancelBtn" type="button">Cancel</button>
+      </div>
+    </section>
+
+    <script src="/family-word-game/app.js"></script>
+  </body>
+</html>
