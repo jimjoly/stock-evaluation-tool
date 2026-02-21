@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Retirement Planner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/retirement-planner/styles.css" />
+  </head>
+  <body>
+    <div class="backdrop"></div>
+    <main class="container">
+      <header class="hero">
+        <h1>Retirement Planner</h1>
+        <p class="home-link"><a href="/">Back to Tool Index</a></p>
+        <p class="subtitle">
+          Model your savings path from today through retirement with inflation-adjusted spending.
+        </p>
+      </header>
+
+      <div class="disclaimer-row">
+        <div class="badge">Planning tool. Not financial advice.</div>
+      </div>
+
+      <section class="controls">
+        <div class="controls-main planner-grid">
+          <label>
+            Current Age
+            <input id="currentAge" type="number" min="18" max="90" value="35" />
+          </label>
+          <label>
+            Retirement Age
+            <input id="retirementAge" type="number" min="40" max="100" value="65" />
+          </label>
+          <label>
+            Life Expectancy
+            <input id="lifeExpectancy" type="number" min="55" max="110" value="92" />
+          </label>
+          <label>
+            Current Savings ($)
+            <input id="currentSavings" type="number" min="0" step="1000" value="150000" />
+          </label>
+
+          <label>
+            Annual Contribution ($)
+            <input id="annualContribution" type="number" min="0" step="500" value="18000" />
+          </label>
+          <label>
+            Contribution Growth (%)
+            <input id="contributionGrowth" type="number" step="0.1" value="3" />
+          </label>
+          <label>
+            Pre-Retirement Return (%)
+            <input id="preReturn" type="number" step="0.1" value="6.5" />
+          </label>
+          <label>
+            Post-Retirement Return (%)
+            <input id="postReturn" type="number" step="0.1" value="4.5" />
+          </label>
+
+          <label>
+            Annual Spending in Retirement ($)
+            <input id="annualSpending" type="number" min="0" step="1000" value="60000" />
+          </label>
+          <label>
+            Inflation Rate (%)
+            <input id="inflation" type="number" step="0.1" value="2.5" />
+          </label>
+          <label>
+            Annual Social Security ($)
+            <input id="socialSecurity" type="number" min="0" step="500" value="30000" />
+          </label>
+          <button id="calculateBtn" type="button">Calculate Plan</button>
+        </div>
+      </section>
+
+      <section class="meta">
+        <div id="status">Ready.</div>
+      </section>
+
+      <section id="summary" class="summary-grid"></section>
+
+      <section class="card chart-card">
+        <div class="card-head">
+          <h3 class="title">Portfolio Balance Over Time</h3>
+          <span class="badge" id="depletionBadge">No depletion detected</span>
+        </div>
+        <svg id="balanceChart" viewBox="0 0 900 320" preserveAspectRatio="none" aria-label="Portfolio chart"></svg>
+      </section>
+
+      <section class="card table-card">
+        <div class="card-head">
+          <h3 class="title">Year-by-Year Projection</h3>
+          <span class="meta-row" id="rowCount">0 years</span>
+        </div>
+        <div class="table-wrap">
+          <table id="projectionTable">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Age</th>
+                <th>Start Balance</th>
+                <th>Contribution</th>
+                <th>Investment Return</th>
+                <th>Social Security</th>
+                <th>Spending</th>
+                <th>Net Cash Flow</th>
+                <th>End Balance</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <p class="footer-copy">© 2026 Bravo Tango Enterprises, LLC. All rights reserved.</p>
+      </footer>
+    </main>
+    <script src="/retirement-planner/app.js"></script>
+  </body>
+</html>

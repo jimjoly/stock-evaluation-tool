@@ -3,88 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stock Investment Evaluator</title>
+    <title>Investment Tools Index</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Manrope:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Manrope:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/portal.css" />
   </head>
   <body>
     <main class="shell">
-      <header class="hero panel">
-        <p class="eyebrow">Equity Screening Dashboard</p>
-        <h1>Stock Investment Evaluator</h1>
-        <p>
-          Enter a ticker to get a recommendation, score breakdown, and rationale. Dividend strength and upside
-          potential carry the most weight, with valuation quality as a safeguard.
-        </p>
+      <header class="hero card">
+        <p class="eyebrow">Bravo Tango Enterprises</p>
+        <h1>Investment Tools</h1>
+        <p>Choose a tool below. Each page is standalone and optimized for a different planning workflow.</p>
       </header>
 
-      <section class="panel controls">
-        <form id="analysisForm" class="form-inline">
-          <label>
-            Stock ticker
-            <input id="tickerInput" type="text" placeholder="AAPL" maxlength="10" autocomplete="off" />
-          </label>
-          <label>
-            Mode
-            <select id="strictMode">
-              <option value="off" selected>Standard</option>
-              <option value="on">Strict (No Recommend on Low Confidence)</option>
-            </select>
-          </label>
-          <button type="submit">Evaluate Stock</button>
-        </form>
-        <p class="hint" id="hintText">Try: AAPL, MSFT, JNJ, XOM, ABBV, CVX</p>
-      </section>
+      <section class="grid">
+        <article class="card tool">
+          <h2>Market Catalyst Monitor</h2>
+          <p>Track market catalyst headlines and SEC filings with directional impact and confidence ranking.</p>
+          <a class="btn" href="/stock-catalyst">Open Market Catalyst Monitor</a>
+        </article>
 
-      <section class="panel result" id="resultCard" aria-live="polite">
-        <div class="result-head">
-          <div>
-            <p class="result-label">Recommendation</p>
-            <h2 id="resultTitle">Enter a ticker to begin.</h2>
-          </div>
-          <div class="score-pill" id="scorePill">--</div>
-        </div>
-        <p id="resultSummary" class="summary">This tool uses a weighted model focused on dividends and upside potential.</p>
-        <div class="kpis" id="kpiCards"></div>
-        <div class="analysis-contract" id="reasonsList"></div>
-      </section>
+        <article class="card tool">
+          <h2>Stock Evaluation Tool</h2>
+          <p>Run ticker-level scoring across value, dividend quality, upside potential, and risk gates.</p>
+          <a class="btn" href="/stock-evaluator">Open Stock Evaluation Tool</a>
+        </article>
 
-      <section class="panel">
-        <div class="section-head">
-          <h2>Top 5 Recommended Stocks</h2>
-          <p>Ranked by weighted total score (dividend + upside emphasized).</p>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Ticker</th>
-                <th>Company</th>
-                <th>Sector</th>
-                <th>Total Score</th>
-                <th>Dividend Yield</th>
-                <th>Upside Potential</th>
-                <th>Value Score</th>
-                <th>Risk Score</th>
-                <th>Call</th>
-              </tr>
-            </thead>
-            <tbody id="topPicksRows"></tbody>
-          </table>
-        </div>
+        <article class="card tool">
+          <h2>Retirement Planner</h2>
+          <p>Project portfolio growth, drawdown, and depletion risk from current age through life expectancy.</p>
+          <a class="btn" href="/retirement-planner">Open Retirement Planner</a>
+        </article>
       </section>
-
-      <footer class="footer">
-        Educational analysis model only, not financial advice. Validate with current filings and market data.
-      </footer>
     </main>
-
-    <script src="/app.js"></script>
   </body>
 </html>
