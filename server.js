@@ -1180,19 +1180,19 @@ function createApp() {
   app.use(express.static(path.join(__dirname, "public")));
 
   app.get("/", (_req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+    res.sendFile(path.join(__dirname, "public", "family-word-game", "index.html"));
   });
 
   app.get("/retirement-planner", (_req, res) => {
-    res.sendFile(path.join(__dirname, "public", "retirement-planner", "index.html"));
+    res.redirect(302, "/");
   });
 
   app.get("/stock-evaluator", (_req, res) => {
-    res.sendFile(path.join(__dirname, "public", "stock-evaluator", "index.html"));
+    res.redirect(302, "/");
   });
 
   app.get("/stock-catalyst", (_req, res) => {
-    res.sendFile(path.join(__dirname, "public", "stock-catalyst", "index.html"));
+    res.redirect(302, "/");
   });
 
   app.get("/family-word-game", (_req, res) => {
@@ -1215,7 +1215,7 @@ function startServer(
     const server = app.listen(port, host, () => {
       const address = server.address();
       const activePort = typeof address === "string" ? port : address.port;
-      console.log(`Investment tools suite running at http://${host}:${activePort}`);
+      console.log(`Joly Family Word Game running at http://${host}:${activePort}`);
       resolve({ app, server, port: activePort });
     });
   });
