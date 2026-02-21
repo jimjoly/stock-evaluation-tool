@@ -1,7 +1,7 @@
 {
-  "name": "market-catalyst-monitor",
+  "name": "aging-inventory-marketing-suite",
   "version": "1.0.0",
-  "description": "Website that finds market-moving financial content and republishes concise impact summaries.",
+  "description": "Marketing suite for auto dealers focused on aging inventory, attribution, and PVR impact.",
   "main": "electron-main.js",
   "scripts": {
     "start": "node server.js",
@@ -9,10 +9,11 @@
     "dist:mac": "electron-builder --mac"
   },
   "keywords": [
-    "stocks",
-    "finance",
-    "news",
-    "catalyst"
+    "automotive",
+    "dealership",
+    "inventory",
+    "marketing",
+    "pvr"
   ],
   "license": "MIT",
   "dependencies": {
@@ -25,8 +26,8 @@
     "playwright": "^1.58.2"
   },
   "build": {
-    "appId": "com.marketcatalyst.monitor",
-    "productName": "Market Catalyst Monitor",
+    "appId": "com.dealer.aginginventorysuite",
+    "productName": "Aging Inventory Marketing Suite",
     "files": [
       "electron-main.js",
       "server.js",
@@ -35,7 +36,7 @@
       "node_modules/**/*"
     ],
     "mac": {
-      "category": "public.app-category.finance",
+      "category": "public.app-category.business",
       "target": [
         "dmg",
         "zip"

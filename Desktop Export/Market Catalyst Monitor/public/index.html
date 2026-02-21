@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Market Catalyst Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="backdrop"></div>
+    <main class="container">
+      <header class="hero">
+        <h1>Market Catalyst Monitor</h1>
+        <p class="subtitle">
+          Current stock-moving financial content with directional impact scoring.
+        </p>
+      </header>
+
+      <section class="controls">
+        <fieldset class="asset-groups">
+          <legend>Asset Classes</legend>
+          <div class="asset-grid">
+            <label class="check"><input type="checkbox" value="stocks" checked /> Stocks</label>
+            <label class="check"><input type="checkbox" value="crypto" checked /> Crypto</label>
+            <label class="check"><input type="checkbox" value="metals" checked /> Precious Metals</label>
+            <label class="check"><input type="checkbox" value="funds" checked /> Funds</label>
+          </div>
+        </fieldset>
+
+        <div class="controls-main">
+          <label>
+            Tickers (comma-separated)
+            <input id="tickers" placeholder="Optional: custom symbols (e.g. TSLA,BTC-USD,GC=F)" />
+          </label>
+          <label>
+            Search keywords
+            <input id="query" placeholder="e.g. dividend, guidance, earnings beat" />
+          </label>
+          <label>
+            Time Window
+            <select id="timeWindow">
+              <option value="12h" selected>Past 12 hours</option>
+              <option value="all">All</option>
+              <option value="24h">Last 24h</option>
+              <option value="36h">Past 36 hours</option>
+              <option value="48h">Past 48 hours</option>
+              <option value="7d">Last 7 days</option>
+            </select>
+          </label>
+          <button id="searchBtn">Search Catalysts</button>
+        </div>
+      </section>
+
+      <section class="meta">
+        <div id="status">Ready.</div>
+      </section>
+
+      <section id="results" class="results"></section>
+          <footer class="site-footer">
+        <p class="footer-copy">© 2026 Bravo Tango Enterprises, LLC. All rights reserved.</p>
+      </footer>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

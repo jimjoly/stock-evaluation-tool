@@ -1,15 +1,12 @@
-# Market Catalyst Monitor
+# Stock Investment Evaluator
 
-A lightweight website that searches financial catalyst content and republishes concise summaries with estimated price-direction impact:
+Live stock evaluator that scores investments with KPI weighting:
 
-- `Likely Upward`
-- `Likely Downward`
-- `Unclear / Mixed`
+- Dividend strength: 40%
+- Upside potential: 35%
+- Value quality: 25%
 
-Sources currently included:
-
-- Yahoo Finance RSS headlines per ticker
-- SEC recent filings per ticker
+It returns a recommendation, the rationale for that recommendation, and top 5 ranked stocks.
 
 ## Run as web app
 
@@ -18,7 +15,24 @@ npm install
 npm start
 ```
 
-Then open `http://127.0.0.1:3000`.
+Open: `http://127.0.0.1:3000`
+
+## Data providers and fallback
+
+Provider order:
+
+1. Yahoo Finance (no API key)
+2. Financial Modeling Prep (`FMP_API_KEY` or `FINANCIAL_MODELING_PREP_API_KEY`)
+3. Alpha Vantage (`ALPHA_VANTAGE_API_KEY`)
+
+If Yahoo fails or rate limits, the app tries the next configured provider automatically.
+
+Optional environment variables:
+
+```bash
+export FMP_API_KEY=your_fmp_key
+export ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key
+```
 
 ## Run as desktop app (macOS)
 
@@ -27,102 +41,8 @@ npm install
 npm run desktop
 ```
 
-## Build a macOS executable
+## Health check
 
-```bash
-npm install
-npm run dist:mac
-```
+`GET /healthz`
 
-Build artifacts will be generated in `dist/`:
-
-- `Market Catalyst Monitor.app`
-- `Market Catalyst Monitor-<version>.dmg`
-
-## Host publicly (Render)
-
-### 1. Push to GitHub
-
-```bash
-git add .
-git commit -m "Prepare app for public hosting"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/market-catalyst-monitor.git
-git push -u origin main
-```
-
-If `origin` already exists, use:
-
-```bash
-git remote set-url origin https://github.com/YOUR_USERNAME/market-catalyst-monitor.git
-git push -u origin main
-```
-
-### 2. Deploy on Render
-
-1. Go to [Render](https://render.com) and click **New +** -> **Blueprint**.
-2. Select your GitHub repo.
-3. Render will detect `render.yaml` and create the web service.
-4. In service Environment settings, set `CONTACT_EMAIL` to a real email you control.
-5. Deploy and open the generated public URL.
-
-### 3. Verify deployment
-
-- Health check: `https://YOUR-RENDER-URL/healthz`
-- App: `https://YOUR-RENDER-URL/`
-
-## Host publicly (Railway)
-
-1. Push this repo to GitHub.
-2. Go to [Railway](https://railway.app) -> **New Project** -> **Deploy from GitHub repo**.
-3. Select this repository (it uses `railway.json` + `Dockerfile`).
-4. In Variables, set:
-   - `NODE_ENV=production`
-   - `CONTACT_EMAIL=you@example.com`
-5. Deploy and open the generated Railway domain.
-
-Verify:
-
-- Health check: `https://YOUR-RAILWAY-URL/healthz`
-- App: `https://YOUR-RAILWAY-URL/`
-
-## Host publicly (Fly.io)
-
-1. Install Fly CLI and sign in:
-
-```bash
-brew install flyctl
-fly auth login
-```
-
-2. From this project folder, create/update the app and set secret:
-
-```bash
-fly launch --no-deploy
-fly secrets set CONTACT_EMAIL=you@example.com
-fly deploy
-```
-
-3. Open your app:
-
-```bash
-fly open
-```
-
-Verify:
-
-- Health check: `https://YOUR-FLY-URL/healthz`
-- App: `https://YOUR-FLY-URL/`
-
-## Environment variables
-
-- `PORT`: Port provided by hosting platform (Render sets this automatically).
-- `HOST`: Optional; defaults to `0.0.0.0` in production and `127.0.0.1` locally.
-- `CONTACT_EMAIL`: Email used in SEC `User-Agent` header (recommended for SEC API etiquette).
-
-## Notes
-
-- Impact scoring is heuristic keyword-based, not predictive advice.
-- Content is republished as short summaries with source links (not full article text).
-- The app is intended for research workflows, not autonomous trading decisions.
-- Unsigned local builds may require allowing the app in macOS Security settings.
+Returns JSON with service status and timestamp.
