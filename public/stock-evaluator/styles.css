@@ -1,14 +1,14 @@
 :root {
-  --bg: #eef2f6;
-  --ink: #1b2530;
-  --muted: #607080;
+  --bg: #ecf5ef;
+  --ink: #1a2b20;
+  --muted: #587061;
   --panel: #ffffff;
-  --line: #d3dde7;
-  --brand: #0e5fa8;
-  --brand-deep: #084477;
+  --line: #ccddd1;
+  --brand: #1f7a43;
+  --brand-deep: #155a31;
   --ok: #0f7a4f;
   --warn: #a3462f;
-  --neutral: #566577;
+  --neutral: #4f6657;
 }
 
 * {
@@ -21,9 +21,9 @@ body {
   font-family: "Manrope", sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at 10% 5%, #d9e8fb 0, transparent 32%),
-    radial-gradient(circle at 90% 0, #d8f1ee 0, transparent 28%),
-    linear-gradient(160deg, #eef2f6, #e6edf5 45%, #edf4f7);
+    radial-gradient(circle at 10% 5%, #d6f0dc 0, transparent 32%),
+    radial-gradient(circle at 90% 0, #d2ebdf 0, transparent 28%),
+    linear-gradient(160deg, #ecf5ef, #e6efe8 45%, #edf5f0);
 }
 
 .shell {
@@ -42,7 +42,7 @@ body {
 }
 
 .hero {
-  background: linear-gradient(130deg, #fafdff, #f2f8ff);
+  background: linear-gradient(130deg, #f9fffb, #effaf2);
   text-align: center;
 }
 
@@ -121,7 +121,7 @@ button {
   font-weight: 700;
   color: #fff;
   border-color: var(--brand-deep);
-  background: linear-gradient(120deg, #1375c7, #0e5fa8);
+  background: linear-gradient(120deg, #2f9a59, #1f7a43);
 }
 
 .hint {

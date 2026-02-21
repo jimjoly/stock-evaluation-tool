@@ -1,11 +1,11 @@
 :root {
-  --bg: #eef4f7;
-  --ink: #0d2638;
-  --muted: #4f6878;
-  --line: #c8d8e5;
+  --bg: #edf5ef;
+  --ink: #10281a;
+  --muted: #4b6c57;
+  --line: #c5dccb;
   --card: #ffffff;
-  --brand: #0a5b91;
-  --brand-deep: #084a77;
+  --brand: #1f7a43;
+  --brand-deep: #155a31;
 }
 
 * {
@@ -18,9 +18,9 @@ body {
   font-family: "Manrope", sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at 12% 10%, #d8ecff 0, transparent 30%),
-    radial-gradient(circle at 90% 6%, #d9f4ea 0, transparent 26%),
-    linear-gradient(170deg, #edf3f7, #e3ebf2 55%, #eef6f9);
+    radial-gradient(circle at 12% 10%, #d7f2dd 0, transparent 30%),
+    radial-gradient(circle at 90% 6%, #d3efe0 0, transparent 26%),
+    linear-gradient(170deg, #edf5ef, #e6efe8 55%, #eef6f1);
 }
 
 .shell {
@@ -87,7 +87,7 @@ body {
   font-weight: 700;
   border-radius: 10px;
   padding: 10px 14px;
-  background: linear-gradient(120deg, #0f72b6, var(--brand));
+  background: linear-gradient(120deg, #2f9a59, var(--brand));
   border: 1px solid var(--brand-deep);
 }
 
